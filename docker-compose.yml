@@ -2,9 +2,7 @@ version: "3"
 
 services:
   nginx:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
+    image: alfg/nginx-rtmp:v1.6.0
     container_name: "nginx-mls"
     ports:
       - 8080:80
