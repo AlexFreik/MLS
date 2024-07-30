@@ -1,10 +1,10 @@
 function renderStreamControls() {
-	const streamControls = document.getElementById('stream-controls');
+    const streamControls = document.getElementById('stream-controls');
 
-	let html = '';
-	for (let i = 1; i <= STREAM_NUM; i++) {
-		// Create the div container
-		html += `
+    let html = '';
+    for (let i = 1; i <= STREAM_NUM; i++) {
+        // Create the div container
+        html += `
             <div class="stream-container p-2">
                 <div id="streamHeader${i}" class="text-xl"></div>
                 ${getJsmpegPlayerHtml(i)}
@@ -14,7 +14,7 @@ function renderStreamControls() {
 
                     <div class="collapse-content">`;
 
-		html += `
+        html += `
             <div class="my-1">
                 <button
                     class="btn btn-xs btn-primary"
@@ -97,172 +97,172 @@ function renderStreamControls() {
                 Playlist
             </div>`;
 
-		html += `
+        html += `
                     </div>
                 </details>
             </div>`;
-	}
-	streamControls.innerHTML = html;
+    }
+    streamControls.innerHTML = html;
 }
 
 function renderStreamHeaders() {
-	const streams = getActiveStreams();
-	let statuses = {
-		distribute: Array(STREAM_NUM),
-		main: Array(STREAM_NUM),
-		backup: Array(STREAM_NUM),
-	};
-	streams.distribute.forEach((stream) => (statuses.distribute[stream.streamId] = true));
-	streams.main.forEach((stream) => (statuses.main[stream.streamId] = true));
-	streams.backup.forEach((stream) => (statuses.backup[stream.streamId] = true));
+    const streams = getActiveStreams();
+    let statuses = {
+        distribute: Array(STREAM_NUM),
+        main: Array(STREAM_NUM),
+        backup: Array(STREAM_NUM),
+    };
+    streams.distribute.forEach((stream) => (statuses.distribute[stream.streamId] = true));
+    streams.main.forEach((stream) => (statuses.main[stream.streamId] = true));
+    streams.backup.forEach((stream) => (statuses.backup[stream.streamId] = true));
 
-	for (let i = 1; i <= STREAM_NUM; i++) {
-		const headerElem = document.getElementById(`streamHeader${i}`);
-		const streamName = streamNames[i];
-		const suffix = streamName ? ` (${streamName})` : '';
-		headerElem.innerHTML = `
+    for (let i = 1; i <= STREAM_NUM; i++) {
+        const headerElem = document.getElementById(`streamHeader${i}`);
+        const streamName = streamNames[i];
+        const suffix = streamName ? ` (${streamName})` : '';
+        headerElem.innerHTML = `
 			<span class="stream-status ${statuses.distribute[i] ? 'on' : 'off'}" id="distribute-status${i}"></span>
 			Stream ${i}${suffix}`;
 
-		document.getElementById(`main-status${i}`).className =
-			`stream-status ${statuses.main[i] ? 'on' : 'off'}`;
-		document.getElementById(`backup-status${i}`).className =
-			`stream-status ${statuses.backup[i] ? 'on' : 'off'}`;
-	}
+        document.getElementById(`main-status${i}`).className =
+            `stream-status ${statuses.main[i] ? 'on' : 'off'}`;
+        document.getElementById(`backup-status${i}`).className =
+            `stream-status ${statuses.backup[i] ? 'on' : 'off'}`;
+    }
 }
 
 function renderOuts() {
-	const actives = getActiveOuts();
-	let statuses = Array(STREAM_NUM)
-		.fill()
-		.map((_) => []);
-	actives.forEach((out) => (statuses[out.streamId][out.outId] = true));
+    const actives = getActiveOuts();
+    let statuses = Array(STREAM_NUM)
+        .fill()
+        .map((_) => []);
+    actives.forEach((out) => (statuses[out.streamId][out.outId] = true));
 
-	for (let i = 1; i <= STREAM_NUM; i++) {
-		const outsDiv = document.getElementById(`stream-outs-${i}`);
+    for (let i = 1; i <= STREAM_NUM; i++) {
+        const outsDiv = document.getElementById(`stream-outs-${i}`);
 
-		let outsHtml = '';
-		// we need to slice slice(0, STREAM_NUM) because outs 98 are used for recording.
-		const outSize = streamOutsConfig[i]
-			.slice(0, STREAM_NUM)
-			.findLastIndex((info) => !isOutEmpty(info));
+        let outsHtml = '';
+        // we need to slice slice(0, STREAM_NUM) because outs 98 are used for recording.
+        const outSize = streamOutsConfig[i]
+            .slice(0, STREAM_NUM)
+            .findLastIndex((info) => !isOutEmpty(info));
 
-		for (var j = 1; j <= outSize; j++) {
-			let info = streamOutsConfig[i][j];
-			if (isOutEmpty(info)) info = { stream: '', out: '', url: '', encoding: '', name: '' };
-			const on = `<button class="btn btn-xs btn-primary"
+        for (var j = 1; j <= outSize; j++) {
+            let info = streamOutsConfig[i][j];
+            if (isOutEmpty(info)) info = { stream: '', out: '', url: '', encoding: '', name: '' };
+            const on = `<button class="btn btn-xs btn-primary"
 				onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=out&actnumber=${j}&state=on')">on</button>`;
-			const off = `<button class="btn btn-xs btn-error"
+            const off = `<button class="btn btn-xs btn-error"
 				onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=out&actnumber=${j}&state=off')">off</button>`;
-			let title = `Out ${j}`;
-			let destDiv = `<span id="destination${i}-${j}">${info.name}</span>`;
-			if (info.name !== '') {
-				title =
-					(info.encoding === 'source' ? '' : `<b>${capitalize(info.encoding)}</b> `) +
-					`${title}: `;
-				destDiv = `<div class="tooltip" data-tip="${info.url}">${destDiv}</div>`;
-			}
-			outsHtml += `
+            let title = `Out ${j}`;
+            let destDiv = `<span id="destination${i}-${j}">${info.name}</span>`;
+            if (info.name !== '') {
+                title =
+                    (info.encoding === 'source' ? '' : `<b>${capitalize(info.encoding)}</b> `) +
+                    `${title}: `;
+                destDiv = `<div class="tooltip" data-tip="${info.url}">${destDiv}</div>`;
+            }
+            outsHtml += `
 				<div class="my-1">
 					<span class="stream-status ${statuses[i][j] ? 'on' : 'off'}" id="status${i}-${j}"></span>
 					${on} ${off} ${title} ${destDiv}
 				</div>`;
-		}
-		if (outSize < 1) {
-			outsHtml += 'No configured outs...';
-		}
+        }
+        if (outSize < 1) {
+            outsHtml += 'No configured outs...';
+        }
 
-		outsDiv.innerHTML = outsHtml;
-	}
+        outsDiv.innerHTML = outsHtml;
+    }
 }
 
 function parseOutputStreamName(str) {
-	const dashIndex = str.indexOf('-');
-	return {
-		streamId: Number(str.substring(6, dashIndex)),
-		destinationName: str.substring(dashIndex + 1),
-	};
+    const dashIndex = str.indexOf('-');
+    return {
+        streamId: Number(str.substring(6, dashIndex)),
+        destinationName: str.substring(dashIndex + 1),
+    };
 }
 
 function getActiveOuts() {
-	let streams = statsJson.rtmp.server.application.find((app) => app.name['#text'] == 'output')
-		.live.stream;
-	if (streams === undefined) streams = []; // no streams
-	if (!Array.isArray(streams)) streams = [streams]; // only one stream
-	streams = streams.map((s) => s.name['#text']);
+    let streams = statsJson.rtmp.server.application.find((app) => app.name['#text'] == 'output')
+        .live.stream;
+    if (streams === undefined) streams = []; // no streams
+    if (!Array.isArray(streams)) streams = [streams]; // only one stream
+    streams = streams.map((s) => s.name['#text']);
 
-	return streams
-		.map((name) => parseOutputStreamName(name))
-		.map((p) => ({
-			streamId: p.streamId,
-			outId: streamOutsConfig[p.streamId].findIndex(
-				(info) => info?.name === p.destinationName,
-			),
-		}))
-		.filter((p) => p.outId !== -1);
+    return streams
+        .map((name) => parseOutputStreamName(name))
+        .map((p) => ({
+            streamId: p.streamId,
+            outId: streamOutsConfig[p.streamId].findIndex(
+                (info) => info?.name === p.destinationName,
+            ),
+        }))
+        .filter((p) => p.outId !== -1);
 }
 
 function extractStreamIds(streamsStats) {
-	let streams = streamsStats;
-	if (streams === undefined) streams = []; // no streams
-	if (!Array.isArray(streams)) streams = [streams]; // only one stream
+    let streams = streamsStats;
+    if (streams === undefined) streams = []; // no streams
+    if (!Array.isArray(streams)) streams = [streams]; // only one stream
 
-	return streams
-		.map((s) => s.name['#text'])
-		.map((name) => ({ streamId: Number(name.substring(6)) }));
+    return streams
+        .map((s) => s.name['#text'])
+        .map((name) => ({ streamId: Number(name.substring(6)) }));
 }
 
 function getActiveStreams() {
-	let distribute = statsJson.rtmp.server.application.find(
-		(app) => app.name['#text'] == 'distribute',
-	).live.stream;
-	let main = statsJson.rtmp.server.application.find((app) => app.name['#text'] == 'main').live
-		.stream;
-	let backup = statsJson.rtmp.server.application.find((app) => app.name['#text'] == 'backup').live
-		.stream;
+    let distribute = statsJson.rtmp.server.application.find(
+        (app) => app.name['#text'] == 'distribute',
+    ).live.stream;
+    let main = statsJson.rtmp.server.application.find((app) => app.name['#text'] == 'main').live
+        .stream;
+    let backup = statsJson.rtmp.server.application.find((app) => app.name['#text'] == 'backup').live
+        .stream;
 
-	return {
-		distribute: extractStreamIds(distribute),
-		main: extractStreamIds(main),
-		backup: extractStreamIds(backup),
-	};
+    return {
+        distribute: extractStreamIds(distribute),
+        main: extractStreamIds(main),
+        backup: extractStreamIds(backup),
+    };
 }
 
 function batchInputControlClick(isOn) {
-	const inputType = document.getElementById('inputType').value;
-	const streams = document
-		.getElementById('batchInputStreams')
-		.value.split(' ')
-		.map((id) => id.trim())
-		.filter((id) => id !== '');
-	executePhpAndShowResponse(
-		'/control.php?batch-input-control',
-		{ 'Content-Type': 'application/json' },
-		JSON.stringify({
-			inputType: inputType,
-			streams: streams,
-			state: isOn ? 'on' : 'off',
-		}),
-	);
+    const inputType = document.getElementById('inputType').value;
+    const streams = document
+        .getElementById('batchInputStreams')
+        .value.split(' ')
+        .map((id) => id.trim())
+        .filter((id) => id !== '');
+    executePhpAndShowResponse(
+        '/control.php?batch-input-control',
+        { 'Content-Type': 'application/json' },
+        JSON.stringify({
+            inputType: inputType,
+            streams: streams,
+            state: isOn ? 'on' : 'off',
+        }),
+    );
 }
 
 async function rerender() {
-	streamNames = await fetchStreamNames();
-	statsJson = await fetchStats();
-	streamOutsConfig = await fetchConfigFile();
-	renderStreamHeaders();
-	renderOuts();
+    streamNames = await fetchStreamNames();
+    statsJson = await fetchStats();
+    streamOutsConfig = await fetchConfigFile();
+    renderStreamHeaders();
+    renderOuts();
 }
 
 window.onload = async function () {
-	renderStreamControls();
-	setVideoPlayers();
-	rerender();
-	setInterval(rerender, 5000);
+    renderStreamControls();
+    setVideoPlayers();
+    rerender();
+    setInterval(rerender, 5000);
 };
 
 (function renderServerDetails() {
-	const address = window.location.hostname;
-	const detailsElem = document.getElementById('server-details');
-	detailsElem.innerHTML = detailsElem.innerHTML.replaceAll('${address}', address);
+    const address = window.location.hostname;
+    const detailsElem = document.getElementById('server-details');
+    detailsElem.innerHTML = detailsElem.innerHTML.replaceAll('${address}', address);
 })();

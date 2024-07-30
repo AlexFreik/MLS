@@ -1,3 +1,6 @@
 jsmpeg.min.js
 .git
 output.css
+.next/
+node_modules/
+package-lock.json

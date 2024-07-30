@@ -8,7 +8,7 @@ install:
 	sudo ./setup-nginx-docker.sh
 
 front:
-	npx nodemon server.js
+	npm run --prefix ./next dev
 
 run:
 	docker compose up
