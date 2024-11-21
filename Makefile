@@ -7,8 +7,12 @@ pretty:
 install:
 	sudo ./setup-nginx-docker.sh
 
+update:
+	git pull
+	sudo ./update-mls.sh
+
 front:
-	npx nodemon server.js
+	npm run --prefix ./next dev
 
 run:
 	docker compose up

@@ -10,10 +10,7 @@ dest=${dest//-+-+/ }                                                            
 resolution=$(cat /usr/local/nginx/scripts/config.txt | grep '__'$streamid'__'$1'__' | cut -d ' ' -f 3)   #Output resolution defined in destination config
 streamname=$(cat /usr/local/nginx/scripts/config.txt | grep '__'$streamid'__'$1'__' | cut -d ' ' -f 4)   #Output name defined in destination config
 
-#Only newffmpegparam is needed. The rest are legacy
-oldffmpegparam="/usr/bin/ffmpeg -nostdin -thread_queue_size 512 -i"
-newffmpegparam="/usr/local/bin/ffmpeg -nostdin -thread_queue_size 512 -i"
-ffmpegtsparam="/usr/local/bin/ffmpeg -nostdin -thread_queue_size 512 -fflags +genpts+igndts+ignidx -avoid_negative_ts make_zero -use_wallclock_as_timestamps 1 -i"
+ffmpegparam="/usr/local/bin/ffmpeg -nostdin -thread_queue_size 512 -i"
 
 #Create pipe interface between inputs and distribute
 inputparam="/usr/local/nginx/scripts/tmp/input_pipe"$id
@@ -130,7 +127,7 @@ on) #This ffmpeg process runs between inputs pipe and distribute
 		fi
 
 		while true; do #This infinite loop will run inside the screen
-			$newffmpegparam $inputparam $inputencodeparam $distributeparam
+			$ffmpegparam $inputparam $inputencodeparam $distributeparam
 			echo "Restarting ffmpeg..." #When above process fails for any reason, restart
 			sleep .2                    #Needed so CPU doesn't get stuck
 		done
@@ -163,7 +160,7 @@ main)
 		fi
 
 		while true; do #Send main input to pipe
-			$newffmpegparam $mainparam -c copy -vbsf h264_mp4toannexb -f mpegts pipe:1 >$inputparam
+			$ffmpegparam $mainparam -c copy -vbsf h264_mp4toannexb -f mpegts pipe:1 >$inputparam
 
 			case $failmethod in   #Failover method
 			mainback)             #Main to backup
@@ -215,7 +212,7 @@ back)
 		fi
 
 		while true; do
-			$newffmpegparam $backupparam -c copy -vbsf h264_mp4toannexb -f mpegts pipe:1 >$inputparam
+			$ffmpegparam $backupparam -c copy -vbsf h264_mp4toannexb -f mpegts pipe:1 >$inputparam
 
 			case $failmethod in
 			mainback)
@@ -404,51 +401,6 @@ off)
 
 ####### OUTPUT CONFIGURATION ######
 
-out99) #For instagram
-	case $2 in
-	off)
-		ME="[S]CREEN.* "$id$1 #Turn off output
-		if [ $(ps aux | grep "$ME" | awk '{print $2}' | wc -l) -gt 0 ]; then
-			kill $(ps aux | grep "$ME" | awk '{print $2}')
-			echo "Turning off "$streamid $1
-			sleep 0.5
-		else
-			echo $streamid $1" is already off"
-			sleep 0.5
-		fi
-		exit 0
-		;;
-
-	*) #Instagram encoding at 480x854 at 1mbps. Flags global headers needed because tee muxer will not automatically generate headers needed for rtmp flv format
-		encodeparam="-acodec aac -async 1 -ar 44100 -ac 1 -b:a 128k -vcodec libx264 -pix_fmt yuv420p -r 25 -g 50 -s 480x854 -b:v 1000k -preset veryfast -flags +global_header"
-		screenname=$id$1
-		LCK="/usr/local/nginx/scripts/tmp/${screenname}.LCK"
-
-		#Create master-slave link to send output to nginx output app simultaneously for stats monitoring
-		checkout="[f=flv]$dest|[f=flv]rtmp://127.0.0.1:1935/output/$streamid-$streamname"
-
-		exec 8>$LCK
-		if flock -n -x 8; then
-			i="0"
-			echo $streamid $1 " has started at "$resolution" resolution"
-			if [ -z "$STY" ]; then
-				exec screen -dm -S $screenname /bin/bash "$0" "$1" "$2"
-			fi
-			while [ $i -lt 9000 ]; do #Turn off if output is idle for 9000*0.2=1800 seconds
-				#Use transpose filter to transpose 90 degrees.
-				$newffmpegparam $distributeparam $encodeparam -vf "transpose=1" -f tee -map 0:v -map 0:a $checkout
-				echo "Waiting for input... Feed me!!!"
-				sleep 0.2
-				i=$(($i + 1))
-			done
-
-		else
-			echo $streamid $1 " is already running"
-		fi
-		;;
-	esac
-	;;
-
 *) #Output resolution encode parameters
 	case $resolution in
 
@@ -501,7 +453,7 @@ out99) #For instagram
 			exec screen -dm -S $screenname /bin/bash "$0" "$1"
 		fi
 
-		ffmpegcommand="$newffmpegparam $distributeparam $encodeparam -strict -2 -f tee -map 0:v -map 0:a \"$checkout\""
+		ffmpegcommand="$ffmpegparam $distributeparam $encodeparam -strict -2 -f tee -map 0:v -map 0:a \"$checkout\""
 
 		while [ $i -lt 9000 ]; do
 			eval "$ffmpegcommand"

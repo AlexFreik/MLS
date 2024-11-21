@@ -6,13 +6,17 @@ The default login/password for the server is admin/nimda
 
 Don't use Ubuntu minimal. Use the regular 16.04 image
 
+## Design
+
+<img src="https://github.com/user-attachments/assets/0d913222-c192-42c4-b611-a5fa3d319eb0" align="center" width="500" >
+
 ## Steps to Install
 
 1. On the terminal, type:
    The installation is automatic, except for the initial part where you need to choose your timezone for time and date configuration.  
     Note: Installation may take up to an hour on a single CPU instance.
 1. Once installation is complete, on the terminal, type: `sudo visudo`
-1. To the bottom of the file that opens up, add: `www-data ALL=NOPASSWD: /bin/bash, /bin/ls`
+1. To the bottom of the file that opens up, add: `www-data ALL=NOPASSWD: /bin/bash, /bin/ls, /usr/bin/find`
 1. `Ctrl+o` to save the file, `Ctrl+X` to exit the notepad editor. This process is needed to give the `NGINX` server access to the shell scripting.
 
 ## Steps to Update
@@ -20,7 +24,7 @@ Don't use Ubuntu minimal. Use the regular 16.04 image
 There is no need to install large libraries if you want to just update the source code. In this case, you can run:
 
 ```sh
-sudo ./update-mls.sh
+$ make update
 ```
 
 ### Uploading Lowerthirds From The Settings

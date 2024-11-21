@@ -158,7 +158,7 @@ if (isset($_GET['bulkset'])) {
 
 
 if (isset($_GET['proclist'])) {
-    $output = shell_exec("sudo ls -laR /var/run/screen/S-root | grep 'main\|back\|holding\|video' | cut -d ' ' -f 8,9,10,11");
+    $output = shell_exec("sudo find /var/run/screen/S-root -type p -printf '%TY-%Tm-%Td %TH:%TM:%.2TS %f\n'");
     echo "<pre>$output</pre>";
 }
 

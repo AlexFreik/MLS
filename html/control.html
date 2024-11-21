@@ -30,49 +30,72 @@
       </div>
     </div>
 
-    <div class="response-box" id="responseBox">
-      <!-- AJAX responses will appear here -->
+    <div
+      class="collapse collapse-arrow fixed bottom-3 right-3 z-[999] w-[500px] bg-base-300 opacity-90">
+      <input type="checkbox" checked />
+      <div class="collapse-title text-xl font-medium">Logs</div>
+      <div class="collapse-content">
+        <div class="h-48 overflow-auto" id="responseBox"></div>
+      </div>
+    </div>
+
+    <div
+      role="alert"
+      id="badConnectionAlert"
+      class="alert alert-error fixed left-1/2 z-[999] hidden w-96 -translate-x-1/2 transform opacity-90">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>Unable to connect to the server...</span>
     </div>
 
     <section class="mx-6 my-3 text-center">
       <p id="server-details">
-        Send stream to <code>rtmp://${address}/distribute/stream1</code> or stream2 or stream3 etc.
+        Distribute - <code>rtmp://${address}/distribute/stream1</code> or <code>stream2</code> or
+        <code>stream3</code> ...
         <br />
-        Send primary stream to rtmp://${address}/main/stream1 or stream2 or stream3 etc. <br />
-        backupaddress = Send backup stream to rtmp://${address}/backup/stream1 or stream2 or stream3
-        etc.
+        Primary - <code>rtmp://${address}/main/stream1</code><br />
+        Backup - <code>rtmp://${address}/backup/stream1</code>
       </p>
     </section>
 
     <div class="mx-10 my-3">
-      <details class="collapse bg-base-200 mx-auto">
+      <details class="collapse mx-auto bg-base-200">
         <summary class="collapse-title text-center"><b>More</b></summary>
         <div class="collapse-content">
           <div class="mx-6 my-3 text-center">
             <form method="post" target="_blank" action="/config.php?remap">
               <p>
-                <b>No. of Audio Channels:</b>
+                No. of Audio Channels:
                 <input
                   type="text"
                   name="channel_no"
                   size="5"
                   placeholder="4"
-                  class="input input-bordered input-neutral input-xs max-w-xs mx-1" />
+                  class="input-neutral input input-bordered input-xs mx-1 max-w-xs" />
                 <select name="outputdest" class="select select-bordered select-xs max-w-xs">
                   <option selected value="main">Main</option>
                   <option value="backup">Backup</option>
                 </select>
-                <input type="submit" value="Remap On" class="btn btn-xs btn-primary" />
+                <input type="submit" value="Remap On" class="btn btn-primary btn-xs" />
               </p>
             </form>
             <form method="post" target="_blank" action="/config.php?remapoff">
               <p>
-                <b>Turn off Remapping: </b>
+                Turn off Remapping:
                 <select name="outputdest" class="select select-bordered select-xs max-w-xs">
                   <option selected value="main">Main</option>
                   <option value="backup">Backup</option>
                 </select>
-                <input type="submit" value="Remap Off" class="btn btn-xs btn-error" />
+                <input type="submit" value="Remap Off" class="btn btn-error btn-xs" />
               </p>
             </form>
           </div>
@@ -80,8 +103,8 @@
           <div class="mx-6 my-3 text-center">
             <p>
               SRT Accept:
-              <a href="/config.php?srtaccept" target="_blank" class="btn btn-xs btn-primary">ON</a>
-              <a href="/config.php?srtacceptoff" target="_blank" class="btn btn-xs btn-error"
+              <a href="/config.php?srtaccept" target="_blank" class="btn btn-primary btn-xs">ON</a>
+              <a href="/config.php?srtacceptoff" target="_blank" class="btn btn-error btn-xs"
                 >OFF</a
               >
             </p>
@@ -89,32 +112,32 @@
 
           <div class="mx-6 my-3 text-center">
             <p>
-              <b>Supers - Global Control:</b>
-              <a href="/control.php?allsuper1on" target="_blank" class="btn btn-xs btn-primary"
+              Supers - Global Control:
+              <a href="/control.php?allsuper1on" target="_blank" class="btn btn-primary btn-xs"
                 >Add 1</a
               >
-              <a href="/control.php?allsuper2on" target="_blank" class="btn btn-xs btn-primary"
+              <a href="/control.php?allsuper2on" target="_blank" class="btn btn-primary btn-xs"
                 >Add 2</a
               >
-              <a href="/control.php?allsuper3on" target="_blank" class="btn btn-xs btn-primary"
+              <a href="/control.php?allsuper3on" target="_blank" class="btn btn-primary btn-xs"
                 >Add 3</a
               >
-              <a href="/control.php?allsuper4on" target="_blank" class="btn btn-xs btn-primary"
+              <a href="/control.php?allsuper4on" target="_blank" class="btn btn-primary btn-xs"
                 >Add 4</a
               >
-              <a href="/control.php?allsuper5on" target="_blank" class="btn btn-xs btn-primary"
+              <a href="/control.php?allsuper5on" target="_blank" class="btn btn-primary btn-xs"
                 >Add 5</a
               >
-              <a href="/control.php?allsuper6on" target="_blank" class="btn btn-xs btn-primary"
+              <a href="/control.php?allsuper6on" target="_blank" class="btn btn-primary btn-xs"
                 >Add 6</a
               >
-              <a href="/control.php?allsuper7on" target="_blank" class="btn btn-xs btn-primary"
+              <a href="/control.php?allsuper7on" target="_blank" class="btn btn-primary btn-xs"
                 >Add 7</a
               >
-              <a href="/control.php?allsuper8on" target="_blank" class="btn btn-xs btn-primary"
+              <a href="/control.php?allsuper8on" target="_blank" class="btn btn-primary btn-xs"
                 >Add 8</a
               >
-              <a href="/control.php?allsuperoff" target="_blank" class="btn btn-xs btn-error"
+              <a href="/control.php?allsuperoff" target="_blank" class="btn btn-error btn-xs"
                 >Remove</a
               >
             </p>
@@ -124,8 +147,8 @@
             Batch Input Control: &nbsp;
 
             <select id="inputType" class="labeled-select">
-              <option value="" disabled selected>Input Type</option>
-              <option value="main">Main</option>
+              <option value="" disabled>Input Type</option>
+              <option value="main" selected>Main</option>
               <option value="back">Backup</option>
               <option value="video">Video</option>
               <option value="holding">Holding</option>
@@ -133,17 +156,29 @@
 
             <input
               type="text"
-              id="batchInputStreams"
-              placeholder="Stream IDs: 3 4 5 7"
               id="batchInputControl"
+              placeholder="Stream IDs: 3 4 5 7"
               class="input input-bordered input-xs w-[30rem]" />
 
-            <button class="btn btn-xs btn-primary" onclick="batchInputControlClick(true);">
+            <button class="btn btn-primary btn-xs" onclick="batchInputControlClick(true);">
               on
             </button>
-            <button class="btn btn-xs btn-error" onclick="batchInputControlClick(false);">
+            <button class="btn btn-error btn-xs" onclick="batchInputControlClick(false);">
               off
             </button>
+          </div>
+
+          <div class="mx-6 my-3 text-center">
+            Refresh Time (seconds):
+            <input
+              type="number"
+              min="1"
+              id="refreshTime"
+              value="5"
+              class="input input-bordered input-xs w-16" />
+            <button class="btn btn-primary btn-xs" onclick="updateRefreshTime();">Update</button>
+
+            <button class="btn btn-outline btn-xs ml-3" onclick="rerender();">Refresh Now</button>
           </div>
         </div>
       </details>

@@ -9,10 +9,10 @@ app.use(express.static(path.join(__dirname, './html')));
 
 // Handle 404 errors
 app.use((req, res) => {
-	res.status(404).send('404: Not Found');
+    res.status(404).send('404: Not Found');
 });
 
 // Start the server
 app.listen(PORT, () => {
-	console.log(`Server is running at http://localhost:${PORT}`);
+    console.log(`Server is running at http://localhost:${PORT}`);
 });

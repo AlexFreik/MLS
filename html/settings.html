@@ -7,8 +7,6 @@
     <link rel="stylesheet" type="text/css" href="/css/output.css" />
     <script type="text/javascript" src="/js/tools.js"></script>
     <script type="text/javascript" src="/js/settings.js"></script>
-    <link href="https://vjs.zencdn.net/5.8.8/video-js.css" rel="stylesheet" />
-    <script src="https://releases.flowplayer.org/js/flowplayer-3.2.12.min.js"></script>
   </head>
   <body class="bg-base-100 text-base-content">
     <div class="navbar bg-base-100">
@@ -28,7 +26,33 @@
         </ul>
       </div>
     </div>
-    <div class="response-box" id="responseBox"></div>
+
+    <div
+      class="collapse collapse-arrow fixed bottom-3 right-3 z-[999] w-[500px] bg-base-300 opacity-90">
+      <input type="checkbox" checked />
+      <div class="collapse-title text-xl font-medium">Logs</div>
+      <div class="collapse-content">
+        <div class="h-48 overflow-auto" id="responseBox"></div>
+      </div>
+    </div>
+
+    <div
+      role="alert"
+      id="badConnectionAlert"
+      class="alert alert-error fixed left-1/2 z-[999] hidden w-96 -translate-x-1/2 transform opacity-90">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>Unable to connect to the server...</span>
+    </div>
 
     <div class="prose mx-auto max-w-3xl">
       <div tabindex="0" class="collapsible-header">
@@ -44,7 +68,7 @@
         </div>
       </div>
       <div class="overflow-x-auto">
-        <table class="mb-0 table" id="name-table">
+        <table class="table" id="name-table">
           <thead></thead>
           <tbody id="name-table-body"></tbody>
         </table>
@@ -57,7 +81,7 @@
       <div class="divider"></div>
 
       <div tabindex="0" class="collapsible-header">
-        <div class="collapse-title text-xl font-medium">
+        <div class="collapse-title">
           Set Outputs
           <a href="/config.php?destlist" target="_blank" class="link link-accent">[file]</a>
         </div>
@@ -87,6 +111,7 @@
             <span class="label-text text-sm">Name</span>
           </div>
           <input
+            id="outName"
             type="text"
             name="name_id"
             placeholder="English_YT..."
@@ -97,7 +122,7 @@
           <div class="label pb-0">
             <span class="label-text text-sm">Stream Id</span>
           </div>
-          <select name="stream_id" class="stream-selector labeled-select w-32"></select>
+          <select name="stream_id" class="stream-selector labeled-select w-36"></select>
         </label>
 
         <label class="input-label">
@@ -129,10 +154,7 @@
           <div class="label pb-0">
             <span class="label-text text-sm">Server URL</span>
           </div>
-          <select
-            id="server-url"
-            onchange="updateRtmpUrl()"
-            class="select select-bordered select-xs max-w-xs">
+          <select id="server-url" class="select select-bordered select-xs max-w-xs">
             <option selected value="">Custom</option>
             <option value="rtmp://a.rtmp.youtube.com/live2/">YouTube</option>
             <option value="rtmp://b.rtmp.youtube.com/live2?backup=1/">YT Backup</option>
@@ -148,7 +170,6 @@
             name="stream_key"
             placeholder=""
             id="stream-key"
-            onchange="updateRtmpUrl()"
             class="input input-bordered input-xs w-[40rem]" />
         </label>
 
@@ -172,7 +193,7 @@
           type="submit"
           class="btn btn-accent btn-sm my-2"
           value="Set Output"
-          onclick="event.preventDefault(); submitFormAndShowResponse('outForm','config.php?destadd');" />
+          onclick="event.preventDefault(); setOutBtnClick();" />
       </form>
 
       <div class="mt-8">
@@ -185,6 +206,18 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
       </div>
 
       <button onclick="bulkSetOuts()" class="btn btn-accent btn-sm my-2">Bulk Set Outputs</button>
+
+      <div class="mt-8">
+        <label class="input-label">
+          <div class="label pb-0">
+            <span class="label-text text-sm">Stream Id</span>
+          </div>
+          <select id="reset-stream" class="stream-selector labeled-select w-36"></select>
+        </label>
+        <button onclick="resetStreamOutputs()" class="btn btn-accent btn-sm my-2">
+          Reset Stream Outputs
+        </button>
+      </div>
 
       <div class="divider"></div>
 
@@ -212,7 +245,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <div class="label pb-0">
             <span class="label-text text-sm">Stream Id</span>
           </div>
-          <select name="stream_id" class="stream-selector labeled-select w-32"></select>
+          <select name="stream_id" class="stream-selector labeled-select w-36"></select>
         </label>
         <label class="input-label">
           <div class="label pb-0">
@@ -251,7 +284,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           type="submit"
           class="btn btn-accent btn-sm my-2"
           value="Add Config"
-          onclick="event.preventDefault(); submitFormAndShowResponse('addConfigForm','config.php?streamadd');" />
+          onclick="event.preventDefault(); submitForm('addConfigForm','config.php?streamadd');" />
       </form>
 
       <div class="divider"></div>
@@ -410,7 +443,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <div class="label pb-0">
             <span class="label-text text-sm">Stream Id</span>
           </div>
-          <select name="stream_id" class="stream-selector labeled-select w-32"></select>
+          <select name="stream_id" class="stream-selector labeled-select w-36"></select>
         </label>
 
         <label class="input-label">
@@ -426,7 +459,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           value="Upload"
           onclick="event.preventDefault();
             showResponse('Uploading started, please wait...');
-            submitFormAndShowResponse('uploadVideo','config.php?upload-video');" />
+            submitForm('uploadVideo','config.php?upload-video');" />
       </form>
 
       <div class="divider"></div>
@@ -484,7 +517,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
       </form>
     </div>
 
-    <footer class="footer footer-center bg-base-300 text-base-content mt-10 p-4">
+    <footer class="footer footer-center mt-10 bg-base-300 p-4 text-base-content">
       <aside>
         <p>Copyright © 2024 - All right reserved by MLS</p>
       </aside>
