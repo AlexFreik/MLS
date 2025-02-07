@@ -1,3 +1,8 @@
+> This repository has been moved to a different account:
+> [https://github.com/isha-live/MLS](https://github.com/isha-live/MLS)
+>
+---
+
 # NGINX Server
 
 The default login/password for the server is admin/nimda
